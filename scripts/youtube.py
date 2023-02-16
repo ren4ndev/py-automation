@@ -1,11 +1,10 @@
 from colorama import Fore, Back, Style
+import click
 from pytube import Playlist, YouTube
 import ffmpeg
-from sys import argv
-import os
 
 
-def clean_filename(name):
+def clear_filename(name):
     forbidden_chars = '"*\\/\'.|?:<>'
     filename = (''.join(
         [x if x not in forbidden_chars else '#' for x in name]
@@ -69,12 +68,20 @@ def clear_mockups():
     if (os.path.exists('video.mp4')):
         os.remove('video.mp4')
 
+@click.command()
+@click.option('--type', default='video', help='video (Single video) | playlist (whole playlist)')
+@click.option('--link', prompt='Link', help='Link of the video/playlist')
+def download(type, link):
+    if (type == 'video'):
+        return download_single_video(link)
+    return download_playlist(link)
+
 
 @download_logger
-def download(link):
+def download_single_video(link):
     yt = YouTube(link)
-    filename = clean_filename(yt.title)
-    print(filename)
+    filename = clear_filename(yt.title)
+    click.echo(filename)
     if (not os.path.exists(filename)):
         try:
             download_audio(yt)
@@ -86,16 +93,10 @@ def download(link):
             clear_mockups()
 
 
-def download_playlist(playlist):
+def download_playlist(link):
+    playlist = Playlist(link)
     for link in playlist.video_urls:
-        download(link)
+        download_single_video(link)
 
-
-if (argv[1] == '-p' or argv[1] == '--playlist'):
-    playlist = Playlist(argv[2])
-    download_playlist(playlist)
-elif (argv[1] == '-v' or argv[1] == '--video'):
-    download(argv[2])
-else:
-    print(Fore.RED + 'Invalid Option')
-    print(Style.RESET_ALL)
+if __name__ == '__main__':
+    download()
