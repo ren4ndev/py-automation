@@ -6,6 +6,14 @@
 
 ## Setup
 
+#### Pré-requisitos
+
+- Python (latest)
+- pip3
+- venv
+
+#### Configurar
+
 Para configurar o projeto na sua máquina, siga os seguintes passos:
 
 - Crie o ambiente virtual com o comando:

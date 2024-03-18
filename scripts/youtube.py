@@ -2,6 +2,7 @@ from colorama import Fore, Back, Style
 import click
 from pytube import Playlist, YouTube
 import ffmpeg
+import os
 
 
 def clear_filename(name):
@@ -68,8 +69,11 @@ def clear_mockups():
     if (os.path.exists('video.mp4')):
         os.remove('video.mp4')
 
+
 @click.command()
-@click.option('--type', default='video', help='video (Single video) | playlist (whole playlist)')
+@click.option(
+    '--type', default='video',
+    help='video (Single video) | playlist (whole playlist)')
 @click.option('--link', prompt='Link', help='Link of the video/playlist')
 def download(type, link):
     if (type == 'video'):
@@ -80,6 +84,7 @@ def download(type, link):
 @download_logger
 def download_single_video(link):
     yt = YouTube(link)
+    print(yt.title)
     filename = clear_filename(yt.title)
     click.echo(filename)
     if (not os.path.exists(filename)):
@@ -97,6 +102,7 @@ def download_playlist(link):
     playlist = Playlist(link)
     for link in playlist.video_urls:
         download_single_video(link)
+
 
 if __name__ == '__main__':
     download()
